@@ -64,9 +64,55 @@ init_db()
 def home():
     return render_template("index.html")
 
-@app.route("/ai")
-def ai_page():
-    return render_template("index ai.html")
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json() or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "").strip()
+
+    # Missing fields
+    if not username or not password:
+        return {"success": False, "error": "Missing username or password"}, 400
+
+    # ---------------------------------------------------
+    # 1️⃣ Hardcoded Admin Login (guna / 123)
+    # ---------------------------------------------------
+    if username == "guna" and password == "123":
+        session["user"] = {
+            "id": 0,
+            "fullname": "Guna Lakshmanan",
+            "username": "guna",
+            "email": "guna@example.com",
+            "mobile": "0000000000"
+        }
+        return {"success": True, "message": "Admin Login Successful"}, 200
+
+    # ---------------------------------------------------
+    # 2️⃣ Normal User Login From Database
+    # ---------------------------------------------------
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+
+    # NOTE: if you are storing password plain text (not hashed), use this:
+    c.execute("SELECT id, fullname, username, email, password, mobile FROM users WHERE username=? AND password=?", (username, password))
+
+    user = c.fetchone()
+    conn.close()
+
+    if user:
+        session["user"] = {
+            "id": user[0],
+            "fullname": user[1],
+            "username": user[2],
+            "email": user[3],
+            "mobile": user[5]
+        }
+        return {"success": True, "message": "Login Successful"}, 200
+
+    # ---------------------------------------------------
+    # 3️⃣ Login Failed
+    # ---------------------------------------------------
+    return {"success": False, "error": "Invalid username or password"}, 401
 
 #######################################
 # Login
