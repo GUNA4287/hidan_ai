@@ -2,10 +2,8 @@ Flask
 flask-cors
 python-dotenv
 openai
-# optional for RAG / embeddings
+optional for RAG / embeddings:
 sentence-transformers
 chromadb
 gunicorn==20.1.0
-
-
 

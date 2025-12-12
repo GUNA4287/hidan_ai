@@ -64,6 +64,13 @@ init_db()
 def home():
     return render_template("index.html")
 
+@app.route("/ai")
+def ai_page():
+    return render_template("index ai.html")
+
+#######################################
+# Login
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json() or {}
@@ -77,7 +84,7 @@ def login():
     # ---------------------------------------------------
     # 1️⃣ Hardcoded Admin Login (guna / 123)
     # ---------------------------------------------------
-    if username == "guna" and password == "123":
+    if username == "demo123" and password == "demo":
         session["user"] = {
             "id": 0,
             "fullname": "Guna Lakshmanan",
@@ -113,35 +120,6 @@ def login():
     # 3️⃣ Login Failed
     # ---------------------------------------------------
     return {"success": False, "error": "Invalid username or password"}, 401
-
-#######################################
-# Login
-@app.route("/login", methods=["POST"])
-def login():
-    data = request.get_json() or {}
-    username = data.get("username", "").strip()
-    password = data.get("password", "").strip()
-
-    if not username or not password:
-        return {"success": False, "error": "Missing username or password"}, 400
-
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
-    user = c.fetchone()
-    conn.close()
-
-    if user:
-        session["user"] = {
-            "id": user[0],
-            "fullname": user[1],
-            "username": user[3],
-            "email": user[2],
-            "mobile": user[5]
-        }
-        return {"success": True, "message": "Login successful"}
-    else:
-        return {"success": False, "error": "Invalid username or password"}, 401
 
 #######################################
 # Registration
