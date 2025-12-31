@@ -191,9 +191,32 @@
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-      <h6>👤 User Account</h6>
-      <p id="userDetails">Username: demo<br>Email: demo@mail.com</p>
-      <hr>
+      <p id="userDetails">
+         Loading user info...
+      </p>
+
+      <script>
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/account")
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("userDetails").innerHTML = "Not logged in";
+        return;
+      }
+
+      document.getElementById("userDetails").innerHTML = `
+        <strong>Username:</strong> ${data.username}<br>
+        <strong>Email:</strong> ${data.email}
+      `;
+    })
+    .catch(err => {
+      console.error("Account fetch error:", err);
+      document.getElementById("userDetails").innerHTML = "Error loading user";
+    });
+});
+</script>
+
       <h6>💬 Chat Histoy</h6>
 <button class="btn btn-info btn-sm mb-2" id="viewChatBtn" type="button" style=" background-color: rgba(95, 171, 221, 0.892);">View Chat</button>
       <div id="chatHistory" class="chat-history"></div>
