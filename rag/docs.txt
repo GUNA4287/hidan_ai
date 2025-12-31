@@ -1,48 +1,30 @@
-import faiss
-import openai
-from sentence_transformers import SentenceTransformer
-import numpy as np
-import os
+Hidan AI is a web-based AI chatbot application developed using Python and the Flask framework.
 
-# Load embedding model (only once)
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
+The purpose of Hidan AI is to allow users to register, log in, and interact with an intelligent AI assistant through a web interface.
 
-# Example documents (later you can load from file/db)
-docs = [
-    "Hidan IT provides website development.",
-    "Hidan IT offers mobile app development.",
-    "Hidan IT delivers freelance IT solutions.",
-    "Hidan IT builds AI chatbots."
-]
+The project uses OpenAI API to generate AI responses for user questions.
 
-# Convert docs → vectors
-doc_vectors = embedder.encode(docs)
-dimension = doc_vectors.shape[1]
+Users can ask questions through a chat interface, and the AI responds in real time.
 
-# Build FAISS index
-index = faiss.IndexFlatL2(dimension)
-index.add(np.array(doc_vectors))
+User authentication is implemented using a username and password system.
 
-def ask_question(query: str) -> str:
-    """Retrieve relevant docs and ask GPT."""
-    # Step 1: Embed query
-    q_vec = embedder.encode([query])
+All registered user details such as fullname, email, username, and mobile number are stored in an SQLite database.
 
-    # Step 2: Search top docs
-    distances, indices = index.search(np.array(q_vec), k=2)
-    retrieved_docs = [docs[i] for i in indices[0]]
+Chat history is saved in the database so that previous conversations can be retrieved later.
 
-    # Step 3: Build GPT prompt
-    context = "\n".join(retrieved_docs)
-    prompt = f"Answer the question using the following context:\n{context}\n\nQuestion: {query}"
+The backend of the application is built using Flask, which handles routing, session management, and API requests.
 
-    # Step 4: Call GPT
-    openai.api_key = os.getenv("OPENAI_API_KEY")  # use .env
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are Hidan, a helpful AI assistant."},
-            {"role": "user", "content": prompt},
-        ],
-    )
-    return response.choices[0].message["content"]
+The frontend is built using HTML, CSS, JavaScript, and Bootstrap for responsive design.
+
+Retrieval Augmented Generation (RAG) is implemented in this project to improve answer accuracy.
+
+RAG works by searching related information from stored documents before generating an AI response.
+
+Sentence Transformers are used to convert text into numerical vectors that represent the meaning of sentences.
+
+FAISS is used to store and search these vectors efficiently based on similarity.
+
+This project demonstrates how AI, backend development, databases, and document-based intelligence work together in a real-world application.
+
+Hidan AI can be used as a learning project, AI assistant, customer support bot, or portfolio project.
+Hidan AI  create and deployement on cloud in Oct-11-2025
